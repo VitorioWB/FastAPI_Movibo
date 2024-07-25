@@ -111,4 +111,4 @@ FastAPI Movibo é uma aplicação web desenvolvida com FastAPI para buscar e rec
 3. Clique em "Recomendar" para ver as recomendações baseadas no filme fornecido.
 
 ## Contato
-Para mais informações, entre em contato com [seu_email@dominio.com].
+Para mais informações, entre em contato com [ptia202424@gmail.com].
