@@ -26,7 +26,7 @@ def search_movies(request: Request, query: str):
     results = df[df['Series_Title'].str.contains(translated_query, case=False, na=False)]
     
     if results.empty:
-        raise HTTPException(status_code=404, detail="No movies found with the given query")
+        return templates.TemplateResponse("not_found.html", {"request": request, "query": query})
     
     formatted_results = [format_movie(movie) for _, movie in results.iterrows()]
     return templates.TemplateResponse("search_results.html", {"request": request, "results": formatted_results})
@@ -43,7 +43,7 @@ def recommend_movies(request: Request, title: str):
     
     results = df[df['Series_Title'].str.contains(translated_title, case=False, na=False)]
     if results.empty:
-        raise HTTPException(status_code=404, detail="Movie not found")
+        return templates.TemplateResponse("not_found.html", {"request": request, "query": title})
     
     movie = results.iloc[0]
     cluster = movie['Cluster']
@@ -65,13 +65,21 @@ def recommend_movies(request: Request, title: str):
     print(f"Recomendações encontradas: {recommendations}")
     
     if recommendations.empty:
-        raise HTTPException(status_code=404, detail="No recommendations found for the given movie")
+        return templates.TemplateResponse("not_found.html", {"request": request, "query": title})
     
     sample_recommendations = recommendations.sample(min(5, len(recommendations)))
     formatted_recommendations = [format_movie(movie) for _, movie in sample_recommendations.iterrows()]
     print(f"Recomendações formatadas: {formatted_recommendations}")
     
-    return templates.TemplateResponse("recommendations.html", {"request": request, "title": title, "recommendations": formatted_recommendations})
+    return templates.TemplateResponse(
+        "recommendations.html",
+        {
+            "request": request,
+            "title": title,
+            "recommendations": formatted_recommendations,
+            "message": f"Esses filmes foram recomendados a partir da busca de '{title}' pois se assemelham nos quesitos gênero, diretor e cluster."
+        }
+    )
 
 if __name__ == "__main__":
     import uvicorn
