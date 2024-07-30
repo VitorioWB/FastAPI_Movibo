@@ -41,7 +41,7 @@ def recommend_movies_endpoint(request: Request, title: str):
         return templates.TemplateResponse("not_found.html", {"request": request, "query": title})
     
     base_movie = base_movie.iloc[0]
-    recommendations = recommend_movies(translated_title)
+    recommendations = recommend_movies(translated_title, n_recommendations=3)
     if recommendations is None or recommendations.empty:
         return templates.TemplateResponse("not_found.html", {"request": request, "query": title})
     
