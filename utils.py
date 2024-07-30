@@ -14,3 +14,17 @@ def format_movie(movie):
         "Description": translated_description,
         "Poster_Link": movie["Poster_Link"]
     }
+
+def generate_recommendation_message(base_movie, recommended_movie):
+    base_genres = set(base_movie["Genre"].split(", "))
+    recommended_genres = set(recommended_movie["Genre"].split(", "))
+    common_genres = base_genres.intersection(recommended_genres)
+
+    message = f"O filme '{recommended_movie['Series_Title']}' foi recomendado pois "
+
+    if common_genres:
+        message += f"apresenta os gêneros {', '.join(common_genres)}"
+    else:
+        message += "é popular e bem avaliado."
+
+    return message
