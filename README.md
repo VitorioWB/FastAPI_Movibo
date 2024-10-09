@@ -30,7 +30,7 @@ O objetivo principal da API é fornecer recomendações de filmes similares com 
 
 - **Exemplo de Requisição**:
   ```
-  GET /recomendados/?title=Inception&genres=Action, Sci-Fi&description=Dreams within dreams
+  GET /recomendados/?title=Inception&genres=Action, Sci-Fi&description=dream
   ```
 
 - **Exemplo de Resposta**:
@@ -42,31 +42,10 @@ O objetivo principal da API é fornecer recomendações de filmes similares com 
         "title": "The Matrix",
         "genres": "Action, Sci-Fi",
         "description": "A computer hacker learns from mysterious rebels about the true nature of his reality."
-      },
-      {
-        "title": "Paprika",
-        "genres": "Animation, Sci-Fi",
-        "description": "When a machine that allows therapists to enter their patients' dreams is stolen, all hell breaks loose."
       }
     ]
   }
   ```
-
-- **Mensagens de Erro**:
-  - Se o título fornecido não for encontrado no banco de dados:
-    ```json
-    {
-      "status": "error",
-      "message": "O filme especificado não foi encontrado no banco de dados."
-    }
-    ```
-  - Se houver problemas nos parâmetros fornecidos (por exemplo, um formato incorreto de gênero):
-    ```json
-    {
-      "status": "error",
-      "message": "Gênero fornecido está em um formato inválido. Use vírgulas para separar múltiplos gêneros."
-    }
-    ```
 
 ### 2. `/` - Página de Busca com Interface HTML
 
@@ -76,43 +55,15 @@ O objetivo principal da API é fornecer recomendações de filmes similares com 
   - O usuário insere as informações nos campos correspondentes (Título, Gênero, Descrição).
   - O formulário é enviado, e a resposta é exibida diretamente na página com uma lista de recomendações.
 
-- **Parâmetros de Consulta (HTML Form)**:
-  - `title` (opcional): Nome do filme para recomendação.
-  - `genres` (opcional): Gênero(s) do filme.
-  - `description` (opcional): Descrição do filme para ajudar na identificação temática.
-
-- **Exemplo de Uso**:
-  - Acesse [https://fastapi-movibo.onrender.com/](https://fastapi-movibo.onrender.com/) e preencha os campos de busca conforme desejado.
-
 ---
 
 ## Estrutura do Código e Organização
 
 ### Arquivo: `main.py`
-
-Este é o ponto de entrada da API. Ele contém a definição dos endpoints e a lógica principal para processar as solicitações de recomendação.
-
-- **Função `recomendados()`**:
-  - Caminho: `/recomendados/`
-  - Método: `GET`
-  - Descrição: Lida com as requisições para gerar recomendações de filmes.
-  - Lógica: Utiliza os parâmetros fornecidos (`title`, `genres`, `description`) para calcular a similaridade de filmes usando clusters gerados previamente.
+- Contém a definição dos endpoints e a lógica principal para processar as solicitações de recomendação.
   
-- **Função `index()`**:
-  - Caminho: `/`
-  - Método: `GET`
-  - Descrição: Serve a página HTML para a versão visual da API.
-  - Lógica: Renderiza a página HTML com os campos para inserção dos parâmetros.
-
 ### Arquivo: `models/recommendation.py`
-
-Este arquivo contém as funções de suporte para carregar o dataset, calcular a similaridade e retornar recomendações com base no clustering.
-
-- **Função `load_dataset()`**:
-  - Descrição: Carrega o dataset de filmes (`imdb_top_1000.csv`), pré-processa e cria os clusters.
-  
-- **Função `get_recommendations()`**:
-  - Descrição: A partir de um título, gênero e descrição fornecidos, calcula a similaridade dos filmes e retorna uma lista de sugestões.
+- Lida com a lógica de similaridade de filmes e gerenciamento de dados.
 
 ---
 
@@ -140,3 +91,44 @@ Este arquivo contém as funções de suporte para carregar o dataset, calcular a
 
    - Para JSON: [http://localhost:8000/recomendados/](http://localhost:8000/recomendados/)
    - Para HTML: [http://localhost:8000/](http://localhost:8000/)
+
+---
+
+## Como Contribuir
+Contribuições são bem-vindas! Se você deseja colaborar com melhorias, correções de bugs ou novas funcionalidades, siga os passos abaixo:
+
+1. **Crie uma branch para sua feature ou correção**:
+
+   ```bash
+   git checkout -b feature/nome-da-feature
+   ```
+
+2. **Faça suas alterações e comite**:
+
+   ```bash
+   git add .
+   git commit -m "Descrição clara das mudanças"
+   ```
+
+3. **Envie a branch para o repositório remoto**:
+
+   ```bash
+   git push origin feature/nome-da-feature
+   ```
+
+4. **Abra um Pull Request (PR)** no GitHub e descreva suas mudanças.
+  
+### Regras para Contribuição
+- Mantenha o código bem documentado.
+- Teste suas alterações antes de enviar.
+- Acompanhe as discussões e siga o estilo de código existente.
+
+---
+
+## Contato
+Se precisar de mais informações ou quiser discutir melhorias para o projeto, entre em contato com a equipe:
+
+- **[Vitório Bearari](https://www.linkedin.com/in/vitorio-bearari/)**
+- **[Eric de Lucas](https://www.linkedin.com/in/eric-de-lucas-silva-902589265/)**
+- **[Fabrício Okamoto](https://www.linkedin.com/in/fabr%C3%ADcio-okamoto-087751302/)**
+- **[Maria Clara Lucas Souza](https://www.linkedin.com/in/maria-clara-lucas-souza-975185192/)**
