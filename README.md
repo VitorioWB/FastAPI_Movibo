@@ -1,114 +1,142 @@
+# Movibo API Documentation
 
-# FastAPI Movibo
+## Visão Geral
+A **Movibo API** é uma API de recomendação de filmes desenvolvida em Python usando o framework **FastAPI**. A aplicação permite que os usuários enviem consultas com o nome, gênero ou descrição de um filme e obtenham recomendações baseadas em similaridade, utilizando técnicas de processamento de linguagem natural e clustering.
 
-## Descrição
-FastAPI Movibo é uma aplicação web desenvolvida com FastAPI para buscar e recomendar filmes com base em dados de uma lista dos 1000 melhores filmes do IMDB.
+### URLs Publicadas
+- **Versão JSON**: [https://fastapi-movibo-cnow.onrender.com/](https://fastapi-movibo-cnow.onrender.com/)
+- **Versão HTML**: [https://fastapi-movibo.onrender.com/](https://fastapi-movibo.onrender.com/)
 
-## Funcionalidades
-- Buscar filmes pelo título
-- Recomendar filmes baseados em um filme específico
+### Objetivo da API
+O objetivo principal da API é fornecer recomendações de filmes similares com base em critérios fornecidos pelo usuário, como nome, gênero e/ou descrição. As respostas são geradas com base em um banco de dados pré-processado de filmes e em técnicas de agrupamento de dados.
 
-## Endpoints da API
+---
 
-### 1. Página Inicial
-- **Endpoint:** `/`
-- **Método:** GET
-- **Descrição:** Exibe uma página inicial com formulários para buscar filmes e recomendar filmes baseados em um título.
+## Endpoints e Funcionalidades
 
-### 2. Buscar Filmes
-- **Endpoint:** `/busca/`
-- **Método:** GET
-- **Parâmetros de Consulta:**
-  - `query` (string): O título ou parte do título do filme a ser buscado.
-- **Descrição:** Busca filmes no banco de dados cujo título contenha o texto fornecido em `query`.
-- **Exemplo de Uso:** 
+### 1. `/recomendados/` - Endpoint de Recomendação de Filmes
+
+- **Método HTTP**: `GET`
+- **Descrição**: Retorna uma lista de filmes recomendados com base nos parâmetros fornecidos pelo usuário.
+- **Parâmetros de Consulta (Query Parameters)**:
+  - `title` (opcional): Nome do filme que o usuário deseja usar como referência para recomendações.
+  - `genres` (opcional): Gênero(s) do filme, separados por vírgula. Por exemplo, `Action, Sci-Fi`.
+  - `description` (opcional): Uma breve descrição do filme para ajudar a API a identificar temas e tópicos relevantes.
+  
+- **Comportamento**:
+  - Se **todos** os parâmetros forem fornecidos (`title`, `genres` e `description`), a API considera a combinação para calcular a similaridade e gerar as recomendações.
+  - Se **nenhum** parâmetro for fornecido, a API retornará uma lista de filmes genéricos como sugestão.
+  - Caso **apenas um** parâmetro seja fornecido (por exemplo, apenas o título), a recomendação será baseada apenas neste parâmetro.
+
+- **Exemplo de Requisição**:
   ```
-  /busca/?query=Inception
+  GET /recomendados/?title=Inception&genres=Action, Sci-Fi&description=Dreams within dreams
   ```
-- **Resposta:**
+
+- **Exemplo de Resposta**:
   ```json
-  [
+  {
+    "status": "success",
+    "recomended_movies": [
+      {
+        "title": "The Matrix",
+        "genres": "Action, Sci-Fi",
+        "description": "A computer hacker learns from mysterious rebels about the true nature of his reality."
+      },
+      {
+        "title": "Paprika",
+        "genres": "Animation, Sci-Fi",
+        "description": "When a machine that allows therapists to enter their patients' dreams is stolen, all hell breaks loose."
+      }
+    ]
+  }
+  ```
+
+- **Mensagens de Erro**:
+  - Se o título fornecido não for encontrado no banco de dados:
+    ```json
     {
-      "Title": "Inception",
-      "Genre": "Action, Adventure, Sci-Fi",
-      "Director": "Christopher Nolan",
-      "IMDB_Rating": 8.8,
-      "Meta_score": 74.0,
-      "Description": "A thief who steals corporate secrets through the use of dream-sharing technology is given the inverse task of planting an idea into the mind of a C.E.O."
+      "status": "error",
+      "message": "O filme especificado não foi encontrado no banco de dados."
     }
-  ]
-  ```
-
-### 3. Recomendar Filmes
-- **Endpoint:** `/recommendados/`
-- **Método:** GET
-- **Parâmetros de Consulta:**
-  - `title` (string): O título do filme para o qual você deseja recomendações.
-- **Descrição:** Recomenda filmes que pertencem ao mesmo cluster do filme fornecido em `title`.
-- **Exemplo de Uso:** 
-  ```
-  /recommendados/?title=Inception
-  ```
-- **Resposta:**
-  ```json
-  [
+    ```
+  - Se houver problemas nos parâmetros fornecidos (por exemplo, um formato incorreto de gênero):
+    ```json
     {
-      "Title": "The Dark Knight",
-      "Genre": "Action, Crime, Drama",
-      "Director": "Christopher Nolan",
-      "IMDB_Rating": 9.0,
-      "Meta_score": 84.0,
-      "Description": "When the menace known as the Joker emerges from his mysterious past, he wreaks havoc and chaos on the people of Gotham."
-    },
-    ...
-  ]
-  ```
+      "status": "error",
+      "message": "Gênero fornecido está em um formato inválido. Use vírgulas para separar múltiplos gêneros."
+    }
+    ```
 
-## Como Executar a Aplicação
-1. Clone o repositório:
-   ```sh
+### 2. `/` - Página de Busca com Interface HTML
+
+- **Método HTTP**: `GET`
+- **Descrição**: Exibe uma interface HTML onde os usuários podem realizar buscas por filmes e obter recomendações visualmente.
+- **Comportamento**:
+  - O usuário insere as informações nos campos correspondentes (Título, Gênero, Descrição).
+  - O formulário é enviado, e a resposta é exibida diretamente na página com uma lista de recomendações.
+
+- **Parâmetros de Consulta (HTML Form)**:
+  - `title` (opcional): Nome do filme para recomendação.
+  - `genres` (opcional): Gênero(s) do filme.
+  - `description` (opcional): Descrição do filme para ajudar na identificação temática.
+
+- **Exemplo de Uso**:
+  - Acesse [https://fastapi-movibo.onrender.com/](https://fastapi-movibo.onrender.com/) e preencha os campos de busca conforme desejado.
+
+---
+
+## Estrutura do Código e Organização
+
+### Arquivo: `main.py`
+
+Este é o ponto de entrada da API. Ele contém a definição dos endpoints e a lógica principal para processar as solicitações de recomendação.
+
+- **Função `recomendados()`**:
+  - Caminho: `/recomendados/`
+  - Método: `GET`
+  - Descrição: Lida com as requisições para gerar recomendações de filmes.
+  - Lógica: Utiliza os parâmetros fornecidos (`title`, `genres`, `description`) para calcular a similaridade de filmes usando clusters gerados previamente.
+  
+- **Função `index()`**:
+  - Caminho: `/`
+  - Método: `GET`
+  - Descrição: Serve a página HTML para a versão visual da API.
+  - Lógica: Renderiza a página HTML com os campos para inserção dos parâmetros.
+
+### Arquivo: `models/recommendation.py`
+
+Este arquivo contém as funções de suporte para carregar o dataset, calcular a similaridade e retornar recomendações com base no clustering.
+
+- **Função `load_dataset()`**:
+  - Descrição: Carrega o dataset de filmes (`imdb_top_1000.csv`), pré-processa e cria os clusters.
+  
+- **Função `get_recommendations()`**:
+  - Descrição: A partir de um título, gênero e descrição fornecidos, calcula a similaridade dos filmes e retorna uma lista de sugestões.
+
+---
+
+## Guia de Uso e Instalação
+
+1. **Clone o repositório**:
+
+   ```bash
    git clone https://github.com/VitorioWB/FastAPI_Movibo.git
-   cd FastAPI_Movibo
    ```
 
-2. Crie e ative um ambiente virtual (opcional, mas recomendado):
-   ```sh
-   python -m venv env
-   source env/bin/activate   # No Windows: env\Scripts ctivate
-   ```
+2. **Instale as dependências**:
 
-3. Instale as dependências:
-   ```sh
+   ```bash
    pip install -r requirements.txt
    ```
 
-4. Execute a aplicação:
-   ```sh
+3. **Rode a API localmente**:
+
+   ```bash
    uvicorn main:app --reload
    ```
 
-5. Abra seu navegador e acesse:
-   ```
-   http://127.0.0.1:8000
-   ```
+4. **Acesse a API no navegador**:
 
-## Estrutura do Projeto
-- **main.py:** Arquivo principal da aplicação FastAPI.
-- **model.py:** Define o modelo de dados e a lógica de treinamento.
-- **utils.py:** Contém funções utilitárias.
-- **templates/:** Diretório que contém os templates HTML para as páginas da aplicação.
-- **imdb_top_1000.csv:** Base de dados utilizada para buscar e recomendar filmes.
-
-## Exemplo de Uso
-### Buscar Filme
-1. Acesse a página inicial.
-2. Insira o título ou parte do título do filme no campo de busca.
-3. Clique em "Buscar" para ver os resultados.
-
-### Recomendar Filme
-1. Acesse a página inicial.
-2. Insira o título do filme no campo de recomendação.
-3. Clique em "Recomendar" para ver as recomendações baseadas no filme fornecido.
-
-## Contato
-Para mais informações, entre em contato com [ptia202424@gmail.com].
+   - Para JSON: [http://localhost:8000/recomendados/](http://localhost:8000/recomendados/)
+   - Para HTML: [http://localhost:8000/](http://localhost:8000/)
