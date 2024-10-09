@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Filme Não Encontrado</title>
+</head>
+<body>
+    <h1>Filme Não Encontrado</h1>
+    <p>O filme "{{ query }}" não consta no banco de dados. Por favor, tente outra busca.</p>
+    <form id="searchForm">
+        <label for="query">Buscar Filme:</label>
+        <input type="text" id="query" name="query" required>
+        <button type="submit">Buscar</button>
+    </form>
+    <form id="recommendForm">
+        <label for="title">Recomendar Filme Baseado no Título:</label>
+        <input type="text" id="title" name="title" required>
+        <button type="submit">Recomendar</button>
+    </form>
+
+    <script>
+        document.getElementById('searchForm').onsubmit = function(event) {
+            event.preventDefault();
+            const query = encodeURIComponent(document.getElementById('query').value);
+            window.location.href = `/busca/?query=${query}`;
+        };
+        
+        document.getElementById('recommendForm').onsubmit = function(event) {
+            event.preventDefault();
+            const title = encodeURIComponent(document.getElementById('title').value);
+            window.location.href = `/recommendados/?title=${title}`;
+        };
+    </script>
+</body>
+</html>

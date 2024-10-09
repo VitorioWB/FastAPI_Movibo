@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resultados da Busca</title>
+</head>
+<body>
+    <h1>Resultados da Busca</h1>
+    <ul>
+        {% for movie in results %}
+        <li>
+            <h2>{{ movie.Title }}</h2>
+            <p><strong>Gênero:</strong> {{ movie.Genre }}</p>
+            <p><strong>Diretor:</strong> {{ movie.Director }}</p>
+            <p><strong>Avaliação IMDB:</strong> {{ movie.IMDB_Rating }}</p>
+            <p><strong>Meta Score:</strong> {{ movie.Meta_score }}</p>
+            <p><strong>Descrição:</strong> {{ movie.Description }}</p>
+            <img src="{{ movie.Poster_Link }}" alt="{{ movie.Title }} poster" width="200">
+        </li>
+        {% endfor %}
+    </ul>
+    <form id="searchForm">
+        <label for="query">Buscar Filme:</label>
+        <input type="text" id="query" name="query" required>
+        <button type="submit">Buscar</button>
+    </form>
+    <form id="recommendForm">
+        <label for="title">Recomendar Filme Baseado no Título:</label>
+        <input type="text" id="title" name="title" required>
+        <button type="submit">Recomendar</button>
+    </form>
+
+    <script>
+        document.getElementById('searchForm').onsubmit = function(event) {
+            event.preventDefault();
+            const query = encodeURIComponent(document.getElementById('query').value);
+            window.location.href = `/busca/?query=${query}`;
+        };
+        
+        document.getElementById('recommendForm').onsubmit = function(event) {
+            event.preventDefault();
+            const title = encodeURIComponent(document.getElementById('title').value);
+            window.location.href = `/recommendados/?title=${title}`;
+        };
+    </script>
+</body>
+</html>
