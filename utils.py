@@ -1,30 +1,39 @@
-from googletrans import Translator
-
-translator = Translator()
-
 def format_movie(movie):
-    description_translation = translator.translate(movie["Overview"], src='en', dest='pt')
-    translated_description = description_translation.text
     return {
         "Title": movie["Series_Title"],
         "Genre": movie["Genre"],
         "Director": movie["Director"],
         "IMDB_Rating": movie["IMDB_Rating"],
         "Meta_score": movie["Meta_score"],
-        "Description": translated_description,
+        "Description": movie["Overview"],  # Mantemos a descrição original
         "Poster_Link": movie["Poster_Link"]
     }
 
-def generate_recommendation_message(base_movie, recommended_movie):
-    base_genres = set(base_movie["Genre"].split(", "))
+def generate_recommendation_message(base_movie, recommended_movie, title=None, genres=None, description=None):
+    messages = []
+
+    # Garantir que base_movie não seja None e tenha a coluna 'Genre'
+    if base_movie is not None and not base_movie.empty and "Genre" in base_movie:
+        base_genres = set(base_movie["Genre"].iloc[0].split(", "))
+    else:
+        base_genres = set()
+    
     recommended_genres = set(recommended_movie["Genre"].split(", "))
     common_genres = base_genres.intersection(recommended_genres)
 
-    message = f"O filme '{recommended_movie['Series_Title']}' foi recomendado pois "
+    if title:
+        messages.append(f"Foi recomendado com base no título '{title}' que você forneceu.")
+    
+    if genres:
+        if common_genres:
+            messages.append(f"Possui gêneros em comum: {', '.join(common_genres)}.")
+        else:
+            messages.append(f"Pertence a gêneros similares aos que você forneceu: {genres}.")
+    
+    if description:
+        messages.append(f"A descrição possui termos semelhantes à frase '{description}' que você mencionou.")
 
-    if common_genres:
-        message += f"apresenta os gêneros {', '.join(common_genres)}"
-    else:
-        message += "é popular e bem avaliado."
+    return " ".join(messages) if messages else "Recomendado com base nos critérios fornecidos."
 
-    return message
+
+
